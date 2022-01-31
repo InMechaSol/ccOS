@@ -16,7 +16,10 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdarg.h>
-#include "../ccNOos/tests/ccNOos_tests.h"
+
+#include "../../ccNOos/executionSystem/execution_system.h"
+#include "../../ccNOos/consoleMenu/console_menu.h"
+
 //void SysTickISRCallback(void); // not using on QTCreatorC
 #define LIGHT_OFF (1u)      // 1-PSoC4, 0-most others
 #define uSEC_PER_CLOCK (1000000/CLOCKS_PER_SEC)
@@ -92,7 +95,7 @@ PlatformAPIFuncsTemplate(size+1);
 
 #endif
 // 9) Global Execution System Instance
-PLATFORM_EXESYS_DECLARE(PLATFORM_NAME);
+//PLATFORM_EXESYS_DECLARE(PLATFORM_NAME);
 // 10) ExeSys API Functions (From Template?)
-ExeSysAPIFuncsTemplate(PLATFORM_NAME)
+ExeSysAPIFuncsTemplate
 
