@@ -18,8 +18,8 @@ error PLATFORM_NAME must be Win32
 #include <iostream>
 #include <fstream>
 
-#include "../../executionSystem/execution_system.h"    
-#include "../../consoleMenu/console_menu.h" 
+#include "execution_system.h"    
+#include "console_menu.h" 
 
 #define LIGHT_OFF (0u)      // 1-PSoC4, 0-most others
 #define uSEC_PER_CLOCK (1000000/CLOCKS_PER_SEC)
