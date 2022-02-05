@@ -1,5 +1,5 @@
 
-#ifndef __SATCOMACSSER__
-#define __SATCOMACSSER__
-#include "Application_Solution.h"
-#endif // __SATCOMACSSER__
+#ifndef __CCACUSER__
+#define __CCACUSER__
+#include "Application_Solution.hpp"
+#endif // __CCACUSER__
