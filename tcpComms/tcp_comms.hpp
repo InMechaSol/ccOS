@@ -1,6 +1,8 @@
 #ifndef TCP_CLASS_H
 #define TCP_CLASS_H
 
+#include "version_config.hpp"
+
 #ifdef _WIN32
 #undef UNICODE
 #define WIN32_LEAN_AND_MEAN

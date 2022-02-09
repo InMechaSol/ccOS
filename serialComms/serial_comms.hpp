@@ -1,7 +1,7 @@
-#ifndef __NBSERIAL_CLASS__
-#define __NBSERIAL_CLASS__
+#ifndef __SERIAL_COMMS__
+#define __SERIAL_COMMS__
 
-#include "iodevice_class.h"
+#include "version_config.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -12,12 +12,8 @@
 
 
 #include <iostream>
-#ifdef __cplusplus
 #include <cstring>
-extern "C" {
-#else
-#include <string>
-#endif
+
 
 enum portStopBitsEnum
 {
@@ -68,9 +64,6 @@ void closeComPort(struct portParametersStruct* paramsPtr);
 int readComString(struct portParametersStruct* paramsPtr);
 int writeComString(struct portParametersStruct* paramsPtr);
 
-
-#ifdef __cplusplus
-}
 class nbserial_class :public iodevice_class
 {
 protected:
@@ -79,13 +72,13 @@ protected:
 	int closedevice();
 	int readdevice();
 	int writedevice();
-	bool isdeviceopen();
+	UI_8 isdeviceopen();
 public:
 	nbserial_class(struct portParametersStruct* parmsPtrIn);
 	void setPortParameters(struct portParametersStruct params);
 	struct portParametersStruct getPortParameters();
 };
 
-#endif // !__cplusplus
-#endif // !__NBSERIAL_CLASS__
+
+#endif // !__SERIAL_COMMS__
 

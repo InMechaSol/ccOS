@@ -1,4 +1,5 @@
-#include "tcp_class.h"
+#include "tcp_comms.hpp"
+#include "os_execution_system.hpp"
 
 #ifndef DEBUG
 #ifdef DEBUGTCP

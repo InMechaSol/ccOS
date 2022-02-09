@@ -1,6 +1,8 @@
 #ifndef UDP_CLASS_H
 #define UDP_CLASS_H
 
+#include "version_config.hpp"
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <string>

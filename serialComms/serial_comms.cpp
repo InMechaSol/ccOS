@@ -1,4 +1,6 @@
-#include "nbserial_class.h"
+#include "serial_comms.hpp"
+#include "os_execution_system.hpp"
+
 
 #ifdef _WIN32
 /////////////////////////////////////////////////////////////////////////////

@@ -1,9 +1,5 @@
-#include "Application_Platform_Main.h"
+#include "Application_Platform_Main.hpp"
 
-#ifdef MAIN_CPP_NOos_NOsystick
-CPP_OS_MAIN_TEMPLATE
-#endif
+ccACU_ApplicationClass theApplicationExample;
 
-#ifdef MAIN_CPP_NOos_NOsystick_Arduino
-CPP_MAIN_TEMPLATE_ARDUINO
-#endif
+ccOS_MAIN_TEMPLATE

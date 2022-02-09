@@ -1,4 +1,5 @@
-#include "udp_class.h"
+#include "udp_comms.hpp"
+#include "os_execution_system.hpp"
 
 const char UDPUIServerClientClass::UI_IP_AddrString[15] = "127.0.0.1";
 const unsigned short UDPUIServerClientClass::UI_IP_ClientUI_BindPortArray[2] = { 50501, 50502 };
