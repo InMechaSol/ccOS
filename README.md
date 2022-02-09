@@ -7,3 +7,5 @@ Cross-Platform c/c++ with stdlib and OS dependency, modular
 ![ModularPortableSystems](https://github.com/InMechaSol/ccNOos/blob/main/docs/pngs/Modular_Portable_System.png)
 ## Architecture Assemblies
 ![Architecture_Assemblies](https://github.com/InMechaSol/ccNOos/blob/main/docs/pngs/Architecture_Assemblies.png)
+## ccOS Application Structure
+![Application Structure](https://github.com/InMechaSol/ccNOos/blob/main/docs/pngs/ccOS_Application_Structure.png)
