@@ -49,7 +49,7 @@ enum tcpServerClientStatus
 };
 
 
-class tcp_class
+class tcp_class : public IODeviceClass
 {
 protected:
     enum tcpServerClientStatus tcpStatus = tcpstat_uninitialized;

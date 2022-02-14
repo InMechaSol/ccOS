@@ -20,7 +20,7 @@
 
 
 
-class UDP_Class
+class UDP_Class : public IODeviceClass
 {
 
 

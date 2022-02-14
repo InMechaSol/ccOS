@@ -16,7 +16,7 @@ void openComPort(struct portParametersStruct* paramsPtr)
 	{
 		std::wstring portName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(paramsPtr->portName);
 
-		paramsPtr->hComm = CreateFile(portName.c_str(),
+		paramsPtr->hComm = CreateFile((LPCSTR)portName.c_str(),
 			GENERIC_READ | GENERIC_WRITE,
 			0,
 			0,
@@ -46,28 +46,28 @@ void openComPort(struct portParametersStruct* paramsPtr)
 			throw "Failed to get current com parameters";
 
 		// Update DCB rate.
-		if (paramsPtr->baudRate <= 1200)
+		if (paramsPtr->serialdev.baudRate <= 1200)
 			dcb.BaudRate = CBR_1200;
-		else if (paramsPtr->baudRate <= 2400)
+		else if (paramsPtr->serialdev.baudRate <= 2400)
 			dcb.BaudRate = CBR_2400;
-		else if (paramsPtr->baudRate <= 4800)
+		else if (paramsPtr->serialdev.baudRate <= 4800)
 			dcb.BaudRate = CBR_4800;
-		else if (paramsPtr->baudRate <= 9600)
+		else if (paramsPtr->serialdev.baudRate <= 9600)
 			dcb.BaudRate = CBR_9600;
-		else if (paramsPtr->baudRate <= 14400)
+		else if (paramsPtr->serialdev.baudRate <= 14400)
 			dcb.BaudRate = CBR_14400;
-		else if (paramsPtr->baudRate <= 19200)
+		else if (paramsPtr->serialdev.baudRate <= 19200)
 			dcb.BaudRate = CBR_19200;
-		else if (paramsPtr->baudRate <= 38400)
+		else if (paramsPtr->serialdev.baudRate <= 38400)
 			dcb.BaudRate = CBR_38400;
-		else if (paramsPtr->baudRate <= 57600)
+		else if (paramsPtr->serialdev.baudRate <= 57600)
 			dcb.BaudRate = CBR_57600;
-		else if (paramsPtr->baudRate <= 115200)
+		else if (paramsPtr->serialdev.baudRate <= 115200)
 			dcb.BaudRate = CBR_115200;
 
 		dcb.fBinary = true;
 
-		if (paramsPtr->parity == parity_none)
+		if (paramsPtr->serialdev.parity == parity_none)
 		{
 			dcb.fParity = false;
 			dcb.Parity = 0;
@@ -75,7 +75,7 @@ void openComPort(struct portParametersStruct* paramsPtr)
 		else
 			throw "Parity not yet implemented";
 
-		if (paramsPtr->handshake == handshake_none)
+		if (paramsPtr->serialdev.handshake == handshake_none)
 		{
 			dcb.fOutxCtsFlow = false;
 			dcb.fOutxDsrFlow = false;
@@ -91,7 +91,7 @@ void openComPort(struct portParametersStruct* paramsPtr)
 			throw "Flow control not yet implemented";
 
 
-		if (paramsPtr->stopBits == stop_one)
+		if (paramsPtr->serialdev.stopBits == stop_one)
 		{
 			dcb.StopBits = ONESTOPBIT;
 		}
@@ -278,13 +278,13 @@ int writeComString(struct portParametersStruct* paramsPtr)
 
 #endif
 /////////////////////////////////////////////////////////////////////////////
-// Common cross-platform C
+// Common cross-platform C !!! NOt true
 /////////////////////////////////////////////////////////////////////////////
 struct portParametersStruct buildportParametersStruct(const char* portName, int baudRate, std::string* inStringPtr, std::string* outStringPtr)
 {
 	struct portParametersStruct outstruct;
 	outstruct.portName = portName;
-	outstruct.baudRate = baudRate;
+	outstruct.serialdev.baudRate = baudRate;
 	outstruct.inString = inStringPtr;
 	outstruct.outString = outStringPtr;
 }
@@ -293,7 +293,7 @@ struct portParametersStruct buildportParametersStruct(const char* portName, int 
 // Common cross-platform C++ Wrappers
 /////////////////////////////////////////////////////////////////////////////
 #ifdef __cplusplus
-nbserial_class::nbserial_class(struct portParametersStruct* parmsPtrIn) :iodevice_class(&parmsPtrIn->devdata)
+nbserial_class::nbserial_class(struct portParametersStruct* parmsPtrIn) :Serial_DeviceClass(&parmsPtrIn->serialdev)
 {
 	parmsPtr = parmsPtrIn;
 	// devdata buffer pointers are nullptr still...
@@ -310,7 +310,7 @@ struct portParametersStruct nbserial_class::getPortParameters()
 
 
 
-bool nbserial_class::isdeviceopen()
+UI_8 nbserial_class::isdeviceopen()
 {
 	return isComPortOpen(parmsPtr);
 }

@@ -15,28 +15,6 @@
 #include <cstring>
 
 
-enum portStopBitsEnum
-{
-	stop_none = 0,
-	stop_one = 1,
-	stop_two = 2,
-	stop_onepointfive = 3
-};
-enum portParityEnum
-{
-	parity_none = 0,
-	parity_even = 1,
-	parity_odd = 2,
-	parity_mark = 3,
-	parity_space = 4
-};
-enum portHandshakeEnum
-{
-	handshake_none = 0,
-	handshake_requesttosend = 1,
-	handshake_requesttosendxonxoff = 2,
-	handshake_xonxoff = 3
-};
 
 struct portParametersStruct
 {
@@ -47,12 +25,7 @@ struct portParametersStruct
 	std::string portName = "/dev/tty1";
 	int hComm = -1;
 #endif
-	int baudRate = 9600;
-	int dataBits = 8;
-	enum portStopBitsEnum stopBits = stop_one;
-	enum portParityEnum parity = parity_none;
-	enum portHandshakeEnum handshake = handshake_none;
-	struct devicedatastruct devdata;
+	struct SerialDeviceStruct serialdev;
 	std::string* outString = nullptr;
 	std::string* inString = nullptr;
 };
@@ -64,7 +37,7 @@ void closeComPort(struct portParametersStruct* paramsPtr);
 int readComString(struct portParametersStruct* paramsPtr);
 int writeComString(struct portParametersStruct* paramsPtr);
 
-class nbserial_class :public iodevice_class
+class nbserial_class :public Serial_DeviceClass
 {
 protected:
 	struct portParametersStruct* parmsPtr = nullptr;

@@ -12,36 +12,68 @@
 #include "tcp_comms.hpp"
 #include "stdio_extproc.hpp"
 
-////////////////////////////////////////////////////////////////////////////////
-// C++ ccOSTests Example Application - built from ccOS components
-#define __ccOS_APP_CLASS class theApplicationClass    public:\
-    linkedEntryPointClass setupListHead;\
-    linkedEntryPointClass loopListHead;\
-    linkedEntryPointClass systickListHead;\
-    linkedEntryPointClass exceptionListHead;\
-    MODCLASS_NAME(MODNAME) MODNAME##CompMod;\
-    executionSystemClass* theExecutionSystemPtr;\
-    theApplicationClass() :\
-        MODNAME##CompMod(),\
-        setupListHead(& MODNAME##CompMod, nullptr),\
-        loopListHead(& MODNAME##CompMod, nullptr),\
-        systickListHead(nullptr, nullptr),\
-        exceptionListHead(&MODNAME##CompMod, nullptr)\
-    {\
-        theExecutionSystemPtr = &exeSystem;\
-        theExecutionSystemPtr->LinkTheListsHead(\
-            &setupListHead,\
-            &loopListHead,\
-            &systickListHead,\
-            &exceptionListHead\
-        );\
-    }\
-}
-#define ccOS_APP_CLASS __ccOS_APP_CLASS
+class UI_ServerClass;
+class SNMP_AgentsAPIServer;
+class CGI_ServerClass;
+
+enum ModemTypes
+{
+	ModemTypes_None,
+	ModemTypes_iDirect_950mp,
+	ModemTypes_EFData_
+};
+struct ModemStruct
+{
+	enum ModemTypes type = ModemTypes_None;
+};
+
+struct ManagedSwitchStruct
+{
+
+};
+
+struct ccACUStruct : public SatComACSStruct
+{
+	struct ModemStruct ModemData;
+	struct ManagedSwitchStruct SwitchData;
+};
+
+class ManagedSwitchClass : public exe_thread_class
+{
+protected:
+	struct ManagedSwitchStruct* data;
+public:
+	ManagedSwitchClass(struct ManagedSwitchStruct* dataIn);
+};
+
+class ModemClass : public exe_thread_class
+{
+protected:
+	struct ModemStruct* data;
+public:
+	ModemClass(struct ModemStruct* dataIn);
+};
 
 // ccACU_Class inherits from the SatComACS Compute Module
-class ccACU_Class : public 
+class ccACU_Class : public SatComACS_class
 {
+private:
+	friend class UI_ServerClass;
+	friend class SNMP_AgentsAPIServer;
+	friend class CGI_ServerClass;
+
+protected:
+	struct ccACUStruct* data;
+
+	UI_ServerClass* UIServerPtr = nullptr;
+	SNMP_AgentsAPIServer* SNMPServerPtr = nullptr;
+	CGI_ServerClass* CGIServerPtr = nullptr;
+
+	class ModemClass* ModemPtr = nullptr;
+	class ManagedSwitchClass* ManagedSwitchPtr = nullptr;
+
+public:
+	ccACU_Class(struct ccACUStruct* dataIn);
 
 };
 
