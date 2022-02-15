@@ -1,5 +1,6 @@
 #include "version_config.hpp"
 #include <string>
+#include <thread>
 
 class exe_thread_class : public computeModuleClass
 {
@@ -14,6 +15,7 @@ protected:
     int mainLoopMS = 1000;
 
 public:
+    exe_thread_class(struct computeModuleStruct* compModDataPtrIn);
     virtual std::string* IDString() = 0;
     bool getSetupComplete();
     uint32_t getErrorBits();

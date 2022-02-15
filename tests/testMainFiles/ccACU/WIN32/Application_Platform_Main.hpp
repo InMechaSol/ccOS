@@ -106,25 +106,31 @@ void writeAttenuatorValues(struct txRxStruct* txRxStructPtrIn)
 { 
     TxRxSPI.TriggerWriteOperation();
 }
-void readGPS(struct gpsStruct* gpsStructPtrIn) 
+UI_8 readGPS(struct gpsStruct* gpsStructPtrIn) 
 { 
     if (APT_GPS.NewDataReadIn())
     {
-        // Parse from data string to gps struct
-
-        // clear flag
-        APT_GPS.ClearNewDataReadInFlag();
+        // set to Parse from data string to gps struct
+        gpsStructPtrIn->devptr = APT_GPS.GetDevPtr();
+        return ui8TRUE;
+        // clear flag - done in satcomacs module
+        //APT_GPS.ClearNewDataReadInFlag();
     }
+    else
+        return ui8FALSE;
 }
-void readEcompass(struct eCompStruct* eCompStructPtrIn) 
+UI_8 readEcompass(struct eCompStruct* eCompStructPtrIn) 
 { 
     if (APT_eCompass.NewDataReadIn())
     {
-        // Parse from data string to gps struct
-
-        // clear flag
-        APT_eCompass.ClearNewDataReadInFlag();
+        // set to Parse from data string to gps struct
+        eCompStructPtrIn->devptr = APT_eCompass.GetDevPtr();
+        return ui8TRUE;
+        // clear flag - done in satcomacs module
+        //APT_eCompass.ClearNewDataReadInFlag();
     }
+    else
+        return ui8FALSE;
 }
 void readFreqConv(struct freqConvStruct* freqConvStructPtrIn) 
 { 
@@ -155,66 +161,75 @@ void writePowerMeter(struct powerMeterStruct* powerMeterStructPtrIn)
     PowerMeter_ADC.TriggerWriteOperation();
 }
 
-class ccACU_ApplicationClass   
+class ccACU_ApplicationClass
 {
 public:
-
-    // Linked IO Devices for
-    linkedIODeviceClass IODeviceListHead;
-
     // Linked Entry Points for execution of module entry points
-    linkedEntryPointClass setupListHead; 
-    linkedEntryPointClass loopListHead; 
-    linkedEntryPointClass systickListHead; 
+    linkedEntryPointClass setupListHead;
+    linkedEntryPointClass loopListHead;
+    linkedEntryPointClass systickListHead;
     linkedEntryPointClass exceptionListHead;
 
+    // The ccACU Compute Module and Data
     ccACU_Class ccACU_compMod;
     struct ccACUStruct ccACU_data;
 
+    // API Compute Modules
     UI_ServerClass UIServer_exeThread;
     SNMP_AgentsAPIServer SNMPServer_exeThread;
     CGI_ServerClass CGIServer_exeThread;
 
+    // Device Compute Modules from ccNOos / SatComACS layer
+    APT_WMM_Class APT_WMM_exeThread;
+    TPM_Class TPM_exeThread;
+
+    // Device Compute Modules from ccOS / ccACU layer
     ModemClass Modem_exeThread;
     struct ModemStruct Modem_data;
-
     ManagedSwitchClass Switch_exeThread;
     struct ManagedSwitchStruct Switch_data;
 
-
+    // pointer to The static instance of Execution system for ccACU application
     OSexecutionSystemClass* theExecutionSystemPtr;
-
-
 
     // Construction of the Application
     ccACU_ApplicationClass(OSexecutionSystemClass* theExecutionSystemPtrIn) :
+        // link the ccACU compute module to its ccACU data instance
         ccACU_compMod(&ccACU_data),
-        
 
+        // link the api compute modules to the ccACU compute module
         UIServer_exeThread(&ccACU_compMod),
         SNMPServer_exeThread(&ccACU_compMod),
         CGIServer_exeThread(&ccACU_compMod),
 
+        // link the device compute modules and the data objects on which they operate
+        APT_WMM_exeThread(&ccACU_data.APT, &ccACU_data.WMM, &APT_GPS, &APT_eCompass),
+        TPM_exeThread(&ccACU_data.TPM, &PowerMeter_PLL, &PowerMeter_ADC),
+
         Modem_exeThread(&Modem_data),
         Switch_exeThread(&Switch_data),
 
+        // create ccNOos exeSys linking for
+        // - main process execution of linked compute modules
+        // - systick execution of linked compute modules
+        // - exception handling execution of linked compute modules
         setupListHead(&ccACU_compMod, nullptr),
         loopListHead(&ccACU_compMod, nullptr),
         systickListHead(nullptr, nullptr),
-        exceptionListHead(&ccACU_compMod, nullptr),
+        exceptionListHead(&ccACU_compMod, nullptr)
+    {
+        // link the execution system instance
+        theExecutionSystemPtr = theExecutionSystemPtrIn;
+        // link the execution system module lists
+        theExecutionSystemPtr->LinkTheListsHead(
+            &setupListHead,
+            &loopListHead,
+            &systickListHead,
+            &exceptionListHead
+        );
+    }
 
-        IODeviceListHead(,)
-        {
-            theExecutionSystemPtr = theExecutionSystemPtrIn;
-            theExecutionSystemPtr->LinkTheListsHead(
-                                                    & setupListHead,
-                                                    & loopListHead,
-                                                    & systickListHead,
-                                                    & exceptionListHead
-                                                );
-        }
-
-}
+};
 //ccOS_APP_CLASS
 
 
