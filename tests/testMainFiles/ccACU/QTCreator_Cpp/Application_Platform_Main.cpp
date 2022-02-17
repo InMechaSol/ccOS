@@ -1,31 +1,25 @@
 #include "Application_Platform_Main.hpp"
 
 
-theApplicationClass theApplicationExample;
+ccACU_ApplicationClass theApplicationExample(&theExecutionSystem);
 
+//ccOS_MAIN_TEMPLATE
 
-int main(int argc, char** argv)\
-{\
-    clock_t tlast = clock();\
-    clock_t tnow, tdelta;\
-    UI_32* uSecTicksPtr = &exeSystem.getExeDataPtr()->uSecTicks;\
-    UI_32* hourTicksPtr = &exeSystem.getExeDataPtr()->hourTicks;\
-    exeSystem.ExecuteSetup();\
-    for (;;)\
-    {\
-        tnow = clock();\
-        if (tnow >= tlast)\
-            tdelta = tnow - tlast;\
-        else\
-            tdelta = tnow + (LONG_MAX - tlast);\
-        tlast = tnow;\
-        (*uSecTicksPtr) += tdelta * uSEC_PER_CLOCK;\
-        if ((*uSecTicksPtr) >= TIME_uS_PER_HR)\
-        {\
-            (*uSecTicksPtr) = 0u;\
-            (*hourTicksPtr)++;\
-        }\
-        exeSystem.ExecuteLoop();\
-    }\
-    return RETURN_ERROR;\
+ccOSVersionsTemplate
+int main(int argc, char** argv)
+{
+    // Start the systick thread
+    std::thread systickThread(&OSexecutionSystemClass::ExecuteSysTick, std::ref(theExecutionSystem));
+
+    // Start the exe_thread modules
+    theApplicationExample.LinkAndStartExeThreads();
+
+    // run setup
+    theExecutionSystem.ExecuteSetup();
+    for (;;)
+    {
+        // run loop
+        theExecutionSystem.ExecuteLoop();
+    }
+    return RETURN_ERROR;
 }

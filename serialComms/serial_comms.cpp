@@ -3,6 +3,7 @@
 
 
 #ifdef _WIN32
+#include <locale>
 /////////////////////////////////////////////////////////////////////////////
 // Plain C Windows
 /////////////////////////////////////////////////////////////////////////////
@@ -16,7 +17,7 @@ void openComPort(struct portParametersStruct* paramsPtr)
 	{
 		std::wstring portName = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(paramsPtr->portName);
 
-		paramsPtr->hComm = CreateFile((LPCSTR)portName.c_str(),
+        paramsPtr->hComm = CreateFileW(portName.c_str(),
 			GENERIC_READ | GENERIC_WRITE,
 			0,
 			0,
