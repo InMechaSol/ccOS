@@ -2,39 +2,7 @@
 #include "exe_thread.hpp"
 
 
-// 1) Platform Setup Function
-void platformSetup()
-{
-    //<platformSetup>
-    // 
-    // open config device
-    configFile.open("conFile.json");
-    LogFile.open("logFile.json");
-    // read config string?? 
-    // 
-    // open log device
-    // wrtie log string??
-    // 
-    //</platformSetup>
-}
-// 2) Platform Start Function
-void platformStart()
-{
-    //<platformStart>
-    //</platformStart>
-}
-// 3) Platform Loop Delay Function
-void platformLoopDelay()
-{
-    //<platformLoopDelay>
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //</platformLoopDelay>
-}
 
-
-
-// 8) Platform API Functions (From Template?)
-PlatformAPIFuncsTemplate(size + 1);
 
 
 #ifdef __REALTIME_SYSTICK__

@@ -1,5 +1,7 @@
 
 #ifndef __CCACUSER__
 #define __CCACUSER__
-#include "Application_Solution.hpp"
+
+#include "osApp_Solution.hpp"
+
 #endif // __CCACUSER__

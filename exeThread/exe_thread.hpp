@@ -1,3 +1,6 @@
+#ifndef __EXETHREAD__
+#define __EXETHREAD__
+
 #include "version_config.hpp"
 #include <string>
 #include <thread>
@@ -25,15 +28,7 @@ public:
     void resetIsRunning();
     bool getIsRunning();
     void enableMainLoop();
-    void ThreadExecute();
+    void ThreadExecute();    
 };
 
-class MainProcThread : public exe_thread_class
-{
-protected:
-    int MaxChildThreads = 0;
-    int CountChildThreads = 0;
-    virtual std::thread* getChildThreadAt(int ThreadIndex) = 0;
-    virtual exe_thread_class* getChildClassAt(int ThreadIndex) = 0;
-
-};
+#endif // !__EXETHREAD__

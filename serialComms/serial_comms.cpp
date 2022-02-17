@@ -287,6 +287,7 @@ struct portParametersStruct buildportParametersStruct(const char* portName, int 
 	outstruct.serialdev.baudRate = baudRate;
 	outstruct.inString = inStringPtr;
 	outstruct.outString = outStringPtr;
+	return outstruct;
 }
 
 /////////////////////////////////////////////////////////////////////////////

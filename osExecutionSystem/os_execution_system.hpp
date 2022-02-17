@@ -19,57 +19,29 @@
 #define LIGHT_OFF (0u)      // 1-PSoC4, 0-most others
 #define uSEC_PER_CLOCK (1000000/CLOCKS_PER_SEC)
 
-// 0) (Optional) Platform Config and Log Files/Devices
-std::ifstream configFile;
-std::ofstream LogFile;
 
 
 
-
-
-
-#define __ccOS_MAIN_TEMPLATE ccOSVersionsTemplate \
-int main(int argc, char** argv)\
-{\
-    clock_t tlast = clock();\
-    clock_t tnow, tdelta;\
-    UI_32* uSecTicksPtr = &exeSystem.getExeDataPtr()->uSecTicks;\
-    UI_32* hourTicksPtr = &exeSystem.getExeDataPtr()->hourTicks;\
-    exeSystem.ExecuteSetup();\
-    for (;;)\
-    {\
-        tnow = clock();\
-        if (tnow >= tlast)\
-            tdelta = tnow - tlast;\
-        else\
-            tdelta = tnow + (LONG_MAX - tlast);\
-        tlast = tnow;\
-        (*uSecTicksPtr) += tdelta * uSEC_PER_CLOCK;\
-        if ((*uSecTicksPtr) >= TIME_uS_PER_HR)\
-        {\
-            (*uSecTicksPtr) = 0u;\
-            (*hourTicksPtr)++;\
-        }\
-        exeSystem.ExecuteLoop();\
-    }\
-    return RETURN_ERROR;\
-}
-#define ccOS_MAIN_TEMPLATE __ccOS_MAIN_TEMPLATE
-
+class exe_thread_class;
 
 class OSexecutionSystemClass : public executionSystemClass
 {
-private:
-    std::vector<exe_thread_class*> exeThreadModuleList;
-    std::vector<std::thread> exeThreadList;
-
 public:
+    std::vector<exe_thread_class*> exeThreadModuleList;
+    std::vector<std::thread*> exeThreadList;
     OSexecutionSystemClass(
         UI_32 uSperTick
     );
     void ExecuteSetup();
     void ExecuteLoop();
     void ExecuteSysTick();
+
+};
+
+class ccOSApplicationClass
+{
+public:
+    virtual void LinkAndStartExeThreads() = 0;
 };
 
 #endif //!__OSEXESYS__
