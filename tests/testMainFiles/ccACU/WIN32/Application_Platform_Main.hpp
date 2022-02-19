@@ -63,7 +63,7 @@ void platformLoopDelay()
 // 4) Basic ability for user console input
 void GetMenuChars(char* inStringPtr)
 {
-    std::cin >> inStringPtr;
+    //std::cin >> inStringPtr;
 }
 // 5) Basic ability for user console output
 void WriteMenuLine(char* outStringPtr)

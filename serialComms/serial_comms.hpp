@@ -19,7 +19,7 @@
 struct portParametersStruct
 {
 #ifdef _WIN32
-	std::string portName = "COM1";
+	std::string portName = "COM25";
 	HANDLE hComm = INVALID_HANDLE_VALUE;
 #else
 	std::string portName = "/dev/tty1";
@@ -49,7 +49,7 @@ protected:
 public:
 	nbserial_class(struct portParametersStruct* parmsPtrIn);
 	void setPortParameters(struct portParametersStruct params);
-	struct portParametersStruct getPortParameters();
+	struct portParametersStruct* getPortParameters();
 };
 
 

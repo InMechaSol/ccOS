@@ -304,10 +304,9 @@ void nbserial_class::setPortParameters(struct portParametersStruct params)
 {
 	*parmsPtr = params;
 }
-struct portParametersStruct nbserial_class::getPortParameters()
+struct portParametersStruct* nbserial_class::getPortParameters()
 {
-	struct portParametersStruct outStruct = *parmsPtr;
-	return outStruct;
+	return parmsPtr;
 }
 
 

@@ -26,6 +26,9 @@ class exe_thread_class;
 
 class OSexecutionSystemClass : public executionSystemClass
 {
+protected:
+    bool allThreadsSetup = false;
+    bool allThreadsRunning = false;
 public:
     std::vector<exe_thread_class*> exeThreadModuleList;
     std::vector<std::thread*> exeThreadList;

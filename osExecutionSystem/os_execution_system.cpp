@@ -23,6 +23,32 @@ void OSexecutionSystemClass::ExecuteLoop()
 	executionSystemClass::ExecuteLoop();
 
 	// and managed exe threads
+    if (!allThreadsSetup)
+    {
+        for (unsigned int i = 0; i < exeThreadModuleList.size(); i++)
+        {
+            if (!exeThreadModuleList[i]->getSetupComplete())
+                break;
+            if (i == exeThreadModuleList.size()-1)
+            {
+                allThreadsSetup = true;
+                for (unsigned int j = 0; j < exeThreadModuleList.size(); j++)
+                    exeThreadModuleList[j]->enableMainLoop();                
+            }
+        }
+    }
+    else
+    {
+        allThreadsRunning = true;
+        for (unsigned int i = 0; i < exeThreadModuleList.size(); i++)
+        {
+            if (!exeThreadModuleList[i]->getIsRunning())
+            {
+                allThreadsRunning = false;
+            }
+            exeThreadModuleList[i]->resetIsRunning();
+        }
+    }
 }
 
 // The "systick" entry point
