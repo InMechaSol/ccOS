@@ -157,12 +157,27 @@ int readComLine(struct portParametersStruct* paramsPtr)
         do{
             if (ReadFile(paramsPtr->hComm, &(paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead]), 1, &bytesRead, NULL))
             {
-                totalBytesRead += bytesRead;
+
                 if(bytesRead == 1)
                 {
-                    if (    paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead-1] == '\n' ||
-                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead-1] == '\r')
-                        return totalBytesRead;
+                    if (    paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] == '\n' ||
+                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] == '\r')
+                    {
+
+                        if(totalBytesRead==0)
+                        {
+                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] = 0x00;
+                            return 0;
+                        }
+                        else
+                        {
+                            totalBytesRead++;
+                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] = 0x00;
+                            return totalBytesRead;
+                        }
+                    }
+                    else
+                        totalBytesRead++;
                 }
                 else
                 {
