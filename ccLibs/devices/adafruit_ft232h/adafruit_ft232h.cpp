@@ -1,4 +1,4 @@
-#include "adafruit_ft232h.hpp"
+#include "adafruit_ft232h.c"
 
 adaFruitUSB_SPI_class::adaFruitUSB_SPI_class(struct adaFruitFT232hstruct* FT232hPtrIn) :SPI_DeviceClass(&FT232hPtrIn->spidev)
 {
