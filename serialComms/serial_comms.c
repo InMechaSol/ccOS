@@ -128,68 +128,28 @@ void closeComPort(struct portParametersStruct* paramsPtr)
     CloseHandle(paramsPtr->hComm);
     paramsPtr->hComm = INVALID_HANDLE_VALUE;
 }
-int readComString(struct portParametersStruct* paramsPtr)
+
+int readComPort(struct portParametersStruct* paramsPtr)
 {
     DWORD bytesRead = 0;
-    int totalBytesRead = 0;
-    if (isComPortOpen(paramsPtr))
+    if(paramsPtr->serialdev.readIndex > -1 && paramsPtr->serialdev.readIndex < charBuffMax && paramsPtr->serialdev.numBytes2Read < charBuffMax)
     {
-        do{
-            if(charBuffMax-totalBytesRead == 0)
-            {
-                totalBytesRead = 0;
-            }
-            if (ReadFile(paramsPtr->hComm, &(paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead]), charBuffMax-totalBytesRead, &bytesRead, NULL))
-            {
-                totalBytesRead += bytesRead;
-            }
-        }while(bytesRead>0);
-        return totalBytesRead;
+        if (ReadFile(   paramsPtr->hComm,
+                        &(paramsPtr->serialdev.devdata.inbuff.charbuff[paramsPtr->serialdev.readIndex]),
+                        paramsPtr->serialdev.numBytes2Read,
+                        &bytesRead,
+                        NULL)
+            )
+        {
+            return (int)bytesRead;
+        }
+        else
+            return 0;
     }
-    return 0;
-}
-int readComLine(struct portParametersStruct* paramsPtr)
-{
-    DWORD bytesRead = 0;
-    int totalBytesRead = 0;
-    if (isComPortOpen(paramsPtr))
-    {
-        do{
-            if (ReadFile(paramsPtr->hComm, &(paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead]), 1, &bytesRead, NULL))
-            {
 
-                if(bytesRead == 1)
-                {
-                    if (    paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] == '\n' ||
-                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] == '\r')
-                    {
-
-                        if(totalBytesRead==0)
-                        {
-                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] = 0x00;
-                            return 0;
-                        }
-                        else
-                        {
-                            totalBytesRead++;
-                            paramsPtr->serialdev.devdata.inbuff.charbuff[totalBytesRead] = 0x00;
-                            return totalBytesRead;
-                        }
-                    }
-                    else
-                        totalBytesRead++;
-                }
-                else
-                {
-                    return totalBytesRead;
-                }
-            }
-        }while(bytesRead>0);
-        return totalBytesRead;
-    }
-    return 0;
 }
-int writeComString(struct portParametersStruct* paramsPtr)
+
+int writeComPort(struct portParametersStruct* paramsPtr)
 {
     if (isComPortOpen(paramsPtr))
     {

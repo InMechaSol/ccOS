@@ -31,9 +31,8 @@ struct portParametersStruct buildportParametersStruct(const char* portName, int 
 UI_8 isComPortOpen(struct portParametersStruct* paramsPtr);
 void openComPort(struct portParametersStruct* paramsPtr);
 void closeComPort(struct portParametersStruct* paramsPtr);
-int readComString(struct portParametersStruct* paramsPtr);
-int readComLine(struct portParametersStruct* paramsPtr);
-int writeComString(struct portParametersStruct* paramsPtr);
+int readComPort(struct portParametersStruct* paramsPtr);
+int writeComPort(struct portParametersStruct* paramsPtr);
 
 #ifdef __cplusplus
 

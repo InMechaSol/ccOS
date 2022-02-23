@@ -40,13 +40,10 @@ int nbserial_class::closedevice()
 }
 int nbserial_class::readdevice()
 {
-	if (readLine)
-		return readComLine(parmsPtr);
-	else
-		return readComString(parmsPtr);
+	return readComPort(parmsPtr);
 }
 int nbserial_class::writedevice()
 {
-	return writeComString(parmsPtr);
+	return writeComPort(parmsPtr);
 }
 
