@@ -146,7 +146,8 @@ int readComPort(struct portParametersStruct* paramsPtr)
         else
             return 0;
     }
-
+    else
+        return 0;
 }
 
 int writeComPort(struct portParametersStruct* paramsPtr)
