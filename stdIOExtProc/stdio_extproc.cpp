@@ -1,2 +1,2 @@
-#include "stdio_extproc.hpp"
+#include "stdio_extproc.h"
 #include "os_execution_system.hpp"

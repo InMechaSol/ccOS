@@ -2,25 +2,12 @@
 #define __OSEXESYS__
 
 #include "version_config.hpp"
-////////////////////////////////
-// Bring In ccNOos
 #include "execution_system.h"
-
-#include <ctime>
-#include <thread>
-#include <cstdarg>
-#include <cstdio>
-#include <iostream>
-#include <fstream>
-
+#include "console_menu.h"
 #include <vector>
 #include <thread>
 
-#define LIGHT_OFF (0u)      // 1-PSoC4, 0-most others
 #define uSEC_PER_CLOCK (1000000/CLOCKS_PER_SEC)
-
-
-
 
 class exe_thread_class;
 

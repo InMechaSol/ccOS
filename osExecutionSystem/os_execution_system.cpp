@@ -75,7 +75,7 @@ void OSexecutionSystemClass::ExecuteSysTick()
         else
             tdelta = tnow + (LONG_MAX - tlast);
         tlast = tnow;
-        data.uSecTicks += tdelta * uSEC_PER_CLOCK;
+        data.uSecTicks += tdelta * uSEC_PER_CLOCK; // not data.uSecPerSysTick b/c it is zero for non-real-time systick entry point
         if (data.uSecTicks >= TIME_uS_PER_HR)
         {
             data.uSecTicks = 0u;

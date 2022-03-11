@@ -1,8 +1,9 @@
 #ifndef __EXETHREAD__
 #define __EXETHREAD__
 
+#include "compute_module.h"
 #include "version_config.hpp"
-#include <string>
+#include <cstring>
 #include <thread>
 
 class exe_thread_class : public computeModuleClass
@@ -19,7 +20,7 @@ protected:
 
 public:
     exe_thread_class(struct computeModuleStruct* compModDataPtrIn);
-    virtual std::string* IDString() = 0;
+    virtual char* IDString() = 0;
     bool getSetupComplete();
     uint32_t getErrorBits();
     uint32_t getWarnBits();

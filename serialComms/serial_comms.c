@@ -132,11 +132,11 @@ void closeComPort(struct portParametersStruct* paramsPtr)
 int readComPort(struct portParametersStruct* paramsPtr)
 {
     DWORD bytesRead = 0;
-    if(paramsPtr->serialdev.readIndex > -1 && paramsPtr->serialdev.readIndex < charBuffMax && paramsPtr->serialdev.numBytes2Read < charBuffMax)
+    if(paramsPtr->serialdev.readIndex > -1 && paramsPtr->serialdev.readIndex < charBuffMax && paramsPtr->serialdev.devdata.numbytes2Read < charBuffMax)
     {
         if (ReadFile(   paramsPtr->hComm,
                         &(paramsPtr->serialdev.devdata.inbuff.charbuff[paramsPtr->serialdev.readIndex]),
-                        paramsPtr->serialdev.numBytes2Read,
+                        paramsPtr->serialdev.devdata.numbytes2Read,
                         &bytesRead,
                         NULL)
             )

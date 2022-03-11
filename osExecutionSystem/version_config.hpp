@@ -3,7 +3,7 @@
 
 ////////////////////////////////
 // Bring In ccNOos version config header
-#include "console_menu.h"
+#include "version_config.h"
 #if PLATFORM_NAME==ccOS
 #else
 #error "ccOS Platform NOT Selected for Compile!"
