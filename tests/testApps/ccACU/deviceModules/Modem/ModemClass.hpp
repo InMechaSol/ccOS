@@ -3,15 +3,8 @@
 
 // include the SatComACS Application and Serialization from ccNOos Layer
 #include "PlatformApp_Serialization.h"
-// include ccOS execution system and exe thread module
-//#include "os_execution_system.hpp"
 #include "exe_thread.hpp"
 // include ccOS comm modules and libraries
-#include "serial_comms.hpp"
-//#include "udp_comms.hpp"
-//#include "tcp_comms.hpp"
-#include "stdio_extproc.hpp"
-
 
 
 // Data Structure - Modem Device Module
@@ -23,7 +16,7 @@ enum ModemTypes
 };
 struct ModemStruct
 {
-	struct computeModuleStruct compModData;
+	struct computeModuleStruct compModData = CreateComputeModuleStruct();
 	enum ModemTypes type = ModemTypes_None;
 };
 
@@ -31,11 +24,11 @@ struct ModemStruct
 class ModemClass : public exe_thread_class
 {
 protected:
-	std::string InstanceIDstring;
+	char* InstanceIDstring;
 	struct ModemStruct* data;
 public:
 	static int InstanceCount;
-	std::string* IDString();
+	char* IDString();
 	int mod_setup();
 	int mod_loop();
 	void mod_systick();

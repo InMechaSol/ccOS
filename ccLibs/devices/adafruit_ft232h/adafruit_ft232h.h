@@ -7,6 +7,7 @@ struct adaFruitFT232hstruct
 {
     struct SPIDeviceStruct spidev;
 };
+struct adaFruitFT232hstruct createFT232Struct();
 
 #ifdef __cplusplus
 

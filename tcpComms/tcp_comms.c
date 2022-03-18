@@ -11,6 +11,7 @@ struct tcpStruct createTCPStruct()
 	outStruct.ClientSocket = 0;
 #endif
     outStruct.latchDepth = 0;
+    outStruct.tcpStatus = tcpstat_uninitialized;
 	return outStruct;
 }
 

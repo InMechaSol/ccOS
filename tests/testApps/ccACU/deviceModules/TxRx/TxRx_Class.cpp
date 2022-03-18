@@ -1,9 +1,9 @@
 #include "TxRx_Class.hpp"
 
 
-std::string* TxRx_Class::IDString()
+char* TxRx_Class::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int TxRx_Class::InstanceCount = 0;
 TxRx_Class::TxRx_Class(	struct txRxStruct* datain,
@@ -12,7 +12,7 @@ TxRx_Class::TxRx_Class(	struct txRxStruct* datain,
 {
 	compModData = CreateComputeModuleStruct();
 	InstanceCount++;
-	InstanceIDstring = "TxRx_00";
+	InstanceIDstring = (char*)"TxRx_00";
 }
 int TxRx_Class::mod_setup() { return RETURN_ERROR; }
 int TxRx_Class::mod_loop() { return RETURN_ERROR; }

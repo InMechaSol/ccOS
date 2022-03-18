@@ -2,15 +2,15 @@
 #include "osApp_Solution.hpp"
 
 
-std::string* SNMP_AgentsAPIServer::IDString()
+char* SNMP_AgentsAPIServer::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int SNMP_AgentsAPIServer::InstanceCount = 0;
 SNMP_AgentsAPIServer::SNMP_AgentsAPIServer(struct SNMPServerStruct* dataIn, ccACU_Class* ccACUPtrIn) : exe_thread_class(&dataIn->compModData)
 {
 	InstanceCount++;
-	InstanceIDstring = "UIServer_00";
+	InstanceIDstring = (char*)"UIServer_00";
 	ccACUPtr = ccACUPtrIn;
 	data = dataIn;
 }

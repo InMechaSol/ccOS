@@ -1,8 +1,8 @@
 #include "TPM_Class.hpp"
 
-std::string* TPM_Class::IDString()
+char* TPM_Class::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int TPM_Class::InstanceCount = 0;
 TPM_Class::TPM_Class(	struct tpmStruct* TPMin,
@@ -12,7 +12,7 @@ TPM_Class::TPM_Class(	struct tpmStruct* TPMin,
 {
 	compModData = CreateComputeModuleStruct();
 	InstanceCount++;
-	InstanceIDstring = "TPM_00";
+	InstanceIDstring = (char*)"TPM_00";
 }
 int TPM_Class::mod_setup() { return RETURN_ERROR; }
 int TPM_Class::mod_loop() { return RETURN_ERROR; }

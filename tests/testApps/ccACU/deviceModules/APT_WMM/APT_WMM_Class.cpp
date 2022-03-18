@@ -1,9 +1,11 @@
 #include "APT_WMM_Class.hpp"
+#include "serial_comms.h"
+#include "stdio_extproc.h"
+#include <string>
 
-
-std::string* APT_WMM_Class::IDString()
+char* APT_WMM_Class::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int APT_WMM_Class::InstanceCount = 0;
 APT_WMM_Class::APT_WMM_Class(struct aptStruct* APTin,
@@ -14,7 +16,7 @@ APT_WMM_Class::APT_WMM_Class(struct aptStruct* APTin,
 {
 	compModData = CreateComputeModuleStruct();
 	InstanceCount++;
-	InstanceIDstring = "APT_WMM_00";
+	InstanceIDstring = (char*)"APT_WMM_00";
 	gpsSerialPort = gpsSerialPortin;
 	eCompassSerialPort = eCompassSerialPortin;
 	WMM = WMMin;
@@ -46,22 +48,17 @@ int APT_WMM_Class::mod_loop()
 			;// closePort();
 		}
 	}
-	// if port open, try to read
+	// if port open, check for new data and maybe run noaa wmm
 	else
 	{
-		try
-		{
-			while (readComString(gpsSerialPort->getPortParameters()) > 0)
-			{
-				this->APT->GPS.newGPSData = ui8TRUE;
-			}
-		}
-		catch (...)
+		if (!gpsSerialPort->IsDevOpen())
 		{
 			APT->GPS.Connected = false;
-			gpsSerialPort->CloseDev();
 		}
-
+		else
+		{
+			/// alll that wmm stuff
+		}
 	}
 
 	return RETURN_ERROR; 

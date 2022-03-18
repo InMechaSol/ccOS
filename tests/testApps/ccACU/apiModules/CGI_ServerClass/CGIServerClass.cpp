@@ -2,15 +2,15 @@
 #include "osApp_Solution.hpp"
 
 
-std::string* CGI_ServerClass::IDString()
+char* CGI_ServerClass::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int CGI_ServerClass::InstanceCount = 0;
 CGI_ServerClass::CGI_ServerClass(struct CGIServerStruct* dataIn, ccACU_Class* ccACUPtrIn) : exe_thread_class(&dataIn->compModData)
 {
 	InstanceCount++;
-	InstanceIDstring = "CGIServer_00";
+	InstanceIDstring = (char*)"CGIServer_00";
 	ccACUPtr = ccACUPtrIn;
 	data = dataIn;
 }

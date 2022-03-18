@@ -17,19 +17,20 @@ class ccACU_Class;
 // Data Structure - SNMP API Module
 struct SNMPServerStruct
 {
-	struct computeModuleStruct compModData;
+	struct computeModuleStruct compModData = CreateComputeModuleStruct();
+
 };
 
 // Exe Thread - SNMP API Module
 class SNMP_AgentsAPIServer : public exe_thread_class
 {
 protected:
-	std::string InstanceIDstring;
+	char* InstanceIDstring;
 	struct SNMPServerStruct* data;
 	ccACU_Class* ccACUPtr;
 public:
 	static int InstanceCount;
-	std::string* IDString();
+	char* IDString();
 	int mod_setup();
 	int mod_loop();
 	void mod_systick();

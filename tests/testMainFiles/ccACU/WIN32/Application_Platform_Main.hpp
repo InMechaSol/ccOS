@@ -22,185 +22,39 @@ Notes:
 // This file should only ever be included by one file, PlatformApp_Serialization.cpp
 // Therefore, it is not #ifdef guarded and will cause "multiple definition" errors if included more than once.
 #include "osApp_Serialization.hpp"
+
 #include "CGIServerClass.hpp"
 #include "UIServerClass.hpp"
 #include "SNMPAgentsServer.hpp"
 
+#include <iostream>
 
 // 0) (Optional) Platform Config and Log Files/Devices
-std::ifstream configFile;
-std::ofstream LogFile;
+//std::ifstream configFile;
+//std::ofstream LogFile;
 
-// 1) Platform Setup Function
-void platformSetup()
-{
-    //<platformSetup>
-    // 
-    // open config device
-    configFile.open("conFile.json");
-    LogFile.open("logFile.json");
-    // read config string?? 
-    // 
-    // open log device
-    // wrtie log string??
-    // 
-    //</platformSetup>
-}
-// 2) Platform Start Function
-void platformStart()
-{
-    //<platformStart>
-    //</platformStart>
-}
-// 3) Platform Loop Delay Function
-void platformLoopDelay()
-{
-    //<platformLoopDelay>
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    //</platformLoopDelay>
-}
-
-// 4) Basic ability for user console input
-void GetMenuChars(char* inStringPtr)
-{
-    //std::cin >> inStringPtr;
-}
-// 5) Basic ability for user console output
-void WriteMenuLine(char* outStringPtr)
-{
-    std::cout << outStringPtr;
-}
-
-
-// 6) (Optional) Logging Output
-void WriteLogLine(char* outStringPtr)
-{
-    int logLineLen = -1;
-    while (logLineLen < charBuffMax)
-        if (outStringPtr[++logLineLen] == 0x00)
-            break;
-    if (logLineLen > 0)
-        LogFile.write(outStringPtr, logLineLen);
-}
-// 7) (Optional) Config Input
-void ReadConfigLine(char* inStringPtr)
-{
-    int confLineLen = 0;
-    while (confLineLen < charBuffMax)
-    {
-        if (0 < configFile.peek())
-            configFile.read(&inStringPtr[confLineLen++], 1);
-        else
-            break;
-    }
-
-}
-
-// 8) Platform API Functions (From Template?)
-PlatformAPIFuncsTemplate(size + 1);
-
-// 9) Global Execution System Instance
-//executionSystemClass PLATFORM_EXESYS_NAME(Plat)(uSEC_PER_CLOCK);
-// 10) ExeSys API Functions (From Template?)
-OSexecutionSystemClass theExecutionSystem(uSEC_PER_CLOCK);
-UI_32 getuSecTicks()
-{
-    return theExecutionSystem.getExeDataPtr()->uSecTicks;
-}
-UI_32 getHourTicks()
-{
-    return theExecutionSystem.getExeDataPtr()->hourTicks;
-}
-UI_32 getuSecPerSysTick()
-{
-    return theExecutionSystem.getExeDataPtr()->uSecPerSysTick;
-}
 
 
 
 // Now bring in any platform specific io devices
-#include "adafruit_ft232h.hpp"
+#include "adafruit_ft232h.h"
+#include "tcp_comms.h"
+#include "serial_comms.h"
 
- 
-// Instantiate Platform Specific IO Devices
-struct adaFruitFT232hstruct PowerMeterADC_dev;
-adaFruitUSB_SPI_class PowerMeter_ADC(&PowerMeterADC_dev);
-
-struct adaFruitFT232hstruct PowerMeterPLL_dev;
-adaFruitUSB_SPI_class PowerMeter_PLL(&PowerMeterPLL_dev);
-
-struct adaFruitFT232hstruct TxRxSPI_dev;
-adaFruitUSB_SPI_class TxRxSPI(&TxRxSPI_dev);
-
-struct portParametersStruct APTGPS_dev;
-nbserial_class APT_GPS(&APTGPS_dev);
-
-struct portParametersStruct APTeComp_dev;
-nbserial_class APT_eCompass(&APTeComp_dev);
-
-///////////////////////////////////////////////////////////////////////
-// Platform and Application Specific IO Device Functions
-// - These are called cyclic by the SatComACS Module Loop Function
-// - They need only check if asynchronous io operation has completed
-//
-void writeAttenuatorValues(struct txRxStruct* txRxStructPtrIn) 
-{ 
-    TxRxSPI.TriggerWriteOperation();
+std::thread stdInThread;
+UI_8 stdInThreadRunning = ui8FALSE;
+void readStdIn(char* inStringPtr)
+{
+    do {
+        if (stdInThreadRunning == ui8TRUE)
+        {
+            std::cin >> inStringPtr;
+            stdInThreadRunning = ui8FALSE;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    } while (true);
 }
-UI_8 readGPS(struct gpsStruct* gpsStructPtrIn) 
-{ 
-    if (APT_GPS.NewDataReadIn())
-    {
-        // set to Parse from data string to gps struct
-        gpsStructPtrIn->devptr = APT_GPS.GetDevPtr();
-        return ui8TRUE;
-        // clear flag - done in satcomacs module
-        //APT_GPS.ClearNewDataReadInFlag();
-    }
-    else
-        return ui8FALSE;
-}
-UI_8 readEcompass(struct eCompStruct* eCompStructPtrIn) 
-{ 
-    if (APT_eCompass.NewDataReadIn())
-    {
-        // set to Parse from data string to gps struct
-        eCompStructPtrIn->devptr = APT_eCompass.GetDevPtr();
-        return ui8TRUE;
-        // clear flag - done in satcomacs module
-        //APT_eCompass.ClearNewDataReadInFlag();
-    }
-    else
-        return ui8FALSE;
-}
-void readFreqConv(struct freqConvStruct* freqConvStructPtrIn) 
-{ 
-    if (PowerMeter_PLL.NewDataReadIn())
-    {
-        // Parse from data string to gps struct
 
-        // clear flag
-        PowerMeter_PLL.ClearNewDataReadInFlag();
-    }
-}
-void writeFreqConv(struct freqConvStruct* freqConvStructPtrIn) 
-{ 
-    PowerMeter_PLL.TriggerWriteOperation();
-}
-void readPowerMeter(struct powerMeterStruct* powerMeterStructPtrIn) 
-{ 
-    if (PowerMeter_ADC.NewDataReadIn())
-    {
-        // Parse from data string to gps struct
-
-        // clear flag
-        PowerMeter_ADC.ClearNewDataReadInFlag();
-    }
-}
-void writePowerMeter(struct powerMeterStruct* powerMeterStructPtrIn) 
-{ 
-    PowerMeter_ADC.TriggerWriteOperation();
-}
 
 class ccACU_ApplicationClass : public ccOSApplicationClass
 {
@@ -215,26 +69,54 @@ public:
     ccACU_Class ccACU_compMod;
     struct ccACUStruct ccACU_data;
 
-    // API Compute Modules
-    UI_ServerClass UIServer_exeThread;
+    // UI api Compute Module
     struct UIServerStruct UIServer_data;
+    UI_ServerClass UIServer_exeThread;
+    consoleMenuClass LCDKeyPadMenuInst;      
+    consoleMenuClass Console1MenuInst;
+    consoleMenuClass Console2MenuInst;
+   
+    // SNMP api Compute Module
     SNMP_AgentsAPIServer SNMPServer_exeThread;
     struct SNMPServerStruct SNMPServer_data;
+
+    // "CGI" api Compute Module
     CGI_ServerClass CGIServer_exeThread;
     struct CGIServerStruct CGIServer_data;
 
     // Device Compute Modules from ccNOos / SatComACS layer
-    APT_WMM_Class APT_WMM_exeThread;
-    TPM_Class TPM_exeThread;
-    TxRx_Class TxRx_exeThread;
+    APT_WMM_Class APT_WMM_exeThread; // adds the wmm file process for live declination estimates
+    TPM_Class TPM_exeThread; // adds async io via usb-spi
+    TxRx_Class TxRx_exeThread; // adds async io via usb-spi 
 
     // Device Compute Modules from ccOS / ccACU layer
     ModemClass Modem_exeThread;
-    struct ModemStruct Modem_data;
     ManagedSwitchClass Switch_exeThread;
-    struct ManagedSwitchStruct Switch_data;
 
-    // pointer to The static instance of Execution system for ccACU application
+    // APT Devices
+    struct portParametersStruct GPSPortParams = buildportParametersStruct("\\\\.\\COM32", 9600);
+    struct portParametersStruct eCompPortParams = buildportParametersStruct("\\\\.\\COM31", 19200);
+    nbserial_class GPS_NBSerial;
+    nbserial_class eComp_NBSerial;
+
+    // TPM Devices
+    struct adaFruitFT232hstruct PowerMeterADC_dev = createFT232Struct();
+    adaFruitUSB_SPI_class PowerMeter_ADC;
+    struct adaFruitFT232hstruct PowerMeterPLL_dev = createFT232Struct();
+    adaFruitUSB_SPI_class PowerMeter_PLL;
+
+    // TxRx Devices
+    struct adaFruitFT232hstruct TxRxSPI_dev = createFT232Struct();
+    adaFruitUSB_SPI_class TxRxSPI;
+
+    // Log and Config API Devices
+    struct devicedatastruct StdIODevice = createDeviceStruct();
+    struct logStruct StdLogStruct = createlogStruct();
+    struct configStruct StdConfStruct = createconfigStruct();
+
+    
+
+    // pointer to The instance of Execution system for ccACU application
     OSexecutionSystemClass* theExecutionSystemPtr;
 
     // Construction of the Application
@@ -251,19 +133,33 @@ public:
                         &Modem_exeThread,
                         &Switch_exeThread),
 
-        // link the api compute modules to the ccACU compute module
+        
+
+        // link the api compute modules to the ccACU compute module        
         UIServer_exeThread(&UIServer_data, &ccACU_compMod),
         SNMPServer_exeThread(&SNMPServer_data, &ccACU_compMod),
         CGIServer_exeThread(&CGIServer_data, &ccACU_compMod),
 
         // link the device compute modules and the data objects on which they operate
-        APT_WMM_exeThread(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->APT, &((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->WMM, &APT_GPS, &APT_eCompass),
+        APT_WMM_exeThread(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->APT, &((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->WMM, &GPS_NBSerial, &eComp_NBSerial),
         TPM_exeThread(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->TPM, &PowerMeter_PLL, &PowerMeter_ADC),
         TxRx_exeThread(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->TxRx, &TxRxSPI),
 
         // for future us to think about...
-        Modem_exeThread(&Modem_data),
-        Switch_exeThread(&Switch_data),
+        Modem_exeThread(&ccACU_data.ModemData),
+        Switch_exeThread(&ccACU_data.SwitchData),
+
+        GPS_NBSerial(&GPSPortParams),
+        eComp_NBSerial(&eCompPortParams),
+        PowerMeter_ADC(&PowerMeterADC_dev),
+        PowerMeter_PLL(&PowerMeterPLL_dev),
+        TxRxSPI(&TxRxSPI_dev),
+        
+
+        // construct the console menu objects
+        LCDKeyPadMenuInst(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->LCDKeyPad, &UIServer_exeThread.theMainMenuNode),
+        Console1MenuInst(&((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->ConsoleMenu, &UIServer_exeThread.theMainMenuNode),
+        Console2MenuInst(&ccACU_data.ConsoleMenu2, &UIServer_exeThread.theMainMenuNode),
 
         // create ccNOos exeSys linking for
         // - main process execution of linked compute modules
@@ -272,8 +168,12 @@ public:
         setupListHead(&ccACU_compMod, nullptr),
         loopListHead(&ccACU_compMod, nullptr),
         systickListHead(nullptr, nullptr),
-        exceptionListHead(&ccACU_compMod, nullptr)
+        exceptionListHead(&ccACU_compMod, nullptr)    
     {
+        UIServer_data.uiPtrArray[0] = &LCDKeyPadMenuInst;
+        UIServer_data.uiPtrArray[1] = &Console1MenuInst;
+        UIServer_data.uiPtrArray[2] = &Console2MenuInst;
+
         // link the execution system instance
         theExecutionSystemPtr = theExecutionSystemPtrIn;
         // link the execution system module lists
@@ -285,8 +185,15 @@ public:
         );
     }
 
+    // when this is called, the application has been instantiated, the exe system has been instantiated, and the two have been linked together
+    // - but, the ccNOos level execution system has not yet begun execution (main proc, main loop nor setup)
     void LinkAndStartExeThreads()
     {
+        // Config and Log API device linking
+        StdLogStruct.devptr = &StdIODevice;
+        StdConfStruct.devptr = &StdIODevice;
+        stdInThread = std::thread(readStdIn, &StdConfStruct.devptr->inbuff.charbuff[0]);
+        
         theExecutionSystemPtr->exeThreadModuleList.emplace_back(&UIServer_exeThread);
         theExecutionSystemPtr->exeThreadModuleList.emplace_back(&SNMPServer_exeThread);
         theExecutionSystemPtr->exeThreadModuleList.emplace_back(&CGIServer_exeThread);
@@ -306,7 +213,150 @@ public:
         theExecutionSystemPtr->exeThreadList.emplace_back(new std::thread(&ModemClass::ThreadExecute, std::ref(Modem_exeThread)));
         theExecutionSystemPtr->exeThreadList.emplace_back(new std::thread(&ManagedSwitchClass::ThreadExecute, std::ref(Switch_exeThread)));
     }
+
+
+    // ccNOos abstract function wrappers
+    void linkAPIioDevices()
+    {
+        // APT Device setup
+        openComPort(&GPSPortParams);
+        openComPort(&eCompPortParams);
+        // links between devices and gps/ecompass structure
+        ((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->APT.GPS.devptr = &GPSPortParams.serialdev;
+        ((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->APT.eCompass.devptr = &eCompPortParams.serialdev;
+    }
+    UI_8 readGPS()
+    {
+        GPSPortParams.serialdev.devdata.numbytes2Read = 1;
+        GPSPortParams.serialdev.readIndex = 0;
+        
+        int iNewLine = 0;
+        int tries = 0;
+        do {
+
+
+            if (GPS_NBSerial.ReadDev() == GPSPortParams.serialdev.devdata.numbytes2Read)
+            {
+                if (GPSPortParams.serialdev.devdata.inbuff.charbuff[GPSPortParams.serialdev.readIndex] == '\n')
+                {
+                    iNewLine = GPSPortParams.serialdev.readIndex;
+                }
+                GPSPortParams.serialdev.readIndex += GPSPortParams.serialdev.devdata.numbytes2Read;
+            }
+            else if (GPSPortParams.serialdev.readIndex > 0)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                tries++;
+            }
+            else
+                break;
+
+
+        } while (GPSPortParams.serialdev.readIndex < charBuffMax && iNewLine == 0 && tries < 5);
+
+        GPSPortParams.serialdev.devdata.inbuff.charbuff[iNewLine] = '\0';
+
+        if (iNewLine > 6)
+            return ui8TRUE;
+        else
+            return ui8FALSE;
+    }
+    UI_8 readEcompass()
+    {
+        eCompPortParams.serialdev.devdata.numbytes2Read = 1;
+        eCompPortParams.serialdev.readIndex = 0;
+        int iNewLine = 0;
+        int tries = 0;
+        do {
+
+
+            if (eComp_NBSerial.ReadDev() == eCompPortParams.serialdev.devdata.numbytes2Read)
+            {
+                if (eCompPortParams.serialdev.devdata.inbuff.charbuff[eCompPortParams.serialdev.readIndex] == '\n')
+                {
+                    iNewLine = eCompPortParams.serialdev.readIndex;
+                }
+                eCompPortParams.serialdev.readIndex += eCompPortParams.serialdev.devdata.numbytes2Read;
+            }
+            else if (eCompPortParams.serialdev.readIndex > 0)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                tries++;
+            }
+            else
+                break;
+
+
+        } while (eCompPortParams.serialdev.readIndex < charBuffMax && iNewLine == 0 && tries < 5);
+
+        eCompPortParams.serialdev.devdata.inbuff.charbuff[iNewLine] = '\0';
+
+        if (iNewLine > 10)
+            return ui8TRUE;
+        else
+            return ui8FALSE;
+    }
+    void GetMenuChars()
+    {
+        //  Aha...GetMenuChars() will not be called if the satcomACS LCD and Console UI structure pointers are nullptr
+   //  - so, in the linkapiiodevices() function, we've not linked the satcomACS api devices.
+   //  - instead, we are handling the api devices from the ccACU (ccOS) layer
+        ;
+
+
+
+        // This is called cyclically in the main loop by the satcom acs module
+        // - it is called once for each of the two apimodules (console menu and lcdkeypad)
+        // - lets feed this from a better place...
+
+        // When overloading in ccOS, feed this from ccOS layer
+        // - then feed the ccOS layer from the Platfrom_Main
+
+
+        // One option is to do nothing, then manage the entire menu from above (the ccOS layer)
+        // - this essentially disables the execution of the apiModules at the ccNOos (SatComACS) layer.
+        // - this would transfer full responsibility for apiModule execution the ccOS (ccACU) layer.
+
+        // Perhaps ideal to check if the ccACU 
+
+        //// if Consolue Menu
+        //if (uiStructPtrin->devptr == &ConsoleMenuTCPServerStruct.tcpData.devdata)
+        //{
+        //    // non-blocking server mainatainance
+        //    ConsoleMenu_tcpServer.ShutdownRestartServerSocket();
+
+        //    // non-blocking check for client connection
+        //    ConsoleMenu_tcpServer.ServerListenAccept();
+
+        //    // on each client connection, trigger menu write and show help
+        //    if (lastTCPConsoleState != ConsoleMenu_tcpServer.getTCPStatus())
+        //    {
+        //        lastTCPConsoleState = ConsoleMenu_tcpServer.getTCPStatus();
+        //        if (lastTCPConsoleState == tcpstat_connected)
+        //        {
+        //            uiStructPtrin->showHelp = ui8TRUE;
+        //            uiStructPtrin->devptr->triggerWriteOperation = ui8TRUE;
+        //        }
+        //    }
+
+        //    // non-blocking check for client packet
+        //    if (ConsoleMenu_tcpServer.ReadDev() > 0)
+        //    {
+        //        uiStructPtrin->devptr->newDataReadIn = ui8TRUE;
+        //        uiStructPtrin->parseIndex = 0;
+        //    }
+        //}
+        //// if LCD KeyPad
+        //else if (uiStructPtrin->devptr == &LCDKeyPadPortParams.serialdev.devdata)
+        //{
+        //    // check for chars from serial port
+        //    ;
+        //}
+    }
 };
+
+
+
 //ccOS_APP_CLASS
 
 

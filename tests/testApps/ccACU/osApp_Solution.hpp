@@ -1,6 +1,7 @@
 #ifndef __APP_SOLUTION__
 #define __APP_SOLUTION__
 
+#include "application_solution.h"
 #include "os_execution_system.hpp"
 
 // Include all Device Modules
@@ -20,6 +21,7 @@ struct ccACUStruct
 {
 	struct ModemStruct ModemData;
 	struct ManagedSwitchStruct SwitchData;
+	struct uiStruct ConsoleMenu2 = createuiStruct();
 };
 
 // ccACU_Class inherits from the SatComACS Compute Module
@@ -60,6 +62,7 @@ public:
 		ModemClass* ModemPtrin,
 		ManagedSwitchClass* ManagedSwitchPtrin
 				);
+	UI_ServerClass* getUIServerPtr();
 
 };
 

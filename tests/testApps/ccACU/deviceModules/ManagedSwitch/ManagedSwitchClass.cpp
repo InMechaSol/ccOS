@@ -2,15 +2,15 @@
 
 
 
-std::string* ManagedSwitchClass::IDString()
+char* ManagedSwitchClass::IDString()
 {
-	return &InstanceIDstring;
+	return InstanceIDstring;
 }
 int ManagedSwitchClass::InstanceCount = 0;
 ManagedSwitchClass::ManagedSwitchClass(struct ManagedSwitchStruct* dataIn) : exe_thread_class(&dataIn->compModData)
 {
 	InstanceCount++;
-	InstanceIDstring = "ManagedSwitch_00";
+	InstanceIDstring = (char*)"ManagedSwitch_00";
 }
 int ManagedSwitchClass::mod_setup() { return RETURN_ERROR; }
 int ManagedSwitchClass::mod_loop() { return RETURN_ERROR; }
