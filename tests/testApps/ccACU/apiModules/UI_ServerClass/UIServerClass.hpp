@@ -52,7 +52,10 @@ protected:
 	void readTCP2();
 	void writeTCP2();
 
+	
+
 public:
+	menuNode* fromMenuIndex(int menuIndexIn);
 	static int InstanceCount;
 	char* IDString();
 	int mod_setup();
@@ -67,7 +70,6 @@ public:
 		ccACU_Class* acuptr = nullptr;
 	public:
 		ccacu_menuNode(ccACU_Class* acuptrIn);
-		void printMenu(consoleMenuClass* uiMenuPtrIn);
 		void parseInput(consoleMenuClass* uiMenuPtrIn);
 	};
 	class rootMenuNode : public ccacu_menuNode
@@ -75,7 +77,6 @@ public:
 	public: 
 		rootMenuNode(ccACU_Class* acuptrIn);
 		void printMenu(consoleMenuClass* uiMenuPtrIn);
-		void parseInput(consoleMenuClass* uiMenuPtrIn);
 	};
 	rootMenuNode theRootMenuNode;
 	class mainMenuNode : public ccacu_menuNode
@@ -83,7 +84,6 @@ public:
 	public:
 		mainMenuNode(ccACU_Class* acuptrIn);
 		void printMenu(consoleMenuClass* uiMenuPtrIn);
-		void parseInput(consoleMenuClass* uiMenuPtrIn);
 	};
 	mainMenuNode theMainMenuNode;
 	class satcomacsNode : public ccacu_menuNode
@@ -91,7 +91,6 @@ public:
 	public:
 		satcomacsNode(ccACU_Class* acuptrIn);
 		void printMenu(consoleMenuClass* uiMenuPtrIn);
-		void parseInput(consoleMenuClass* uiMenuPtrIn);
 	};
 	satcomacsNode thesatcomacsNode;
 };

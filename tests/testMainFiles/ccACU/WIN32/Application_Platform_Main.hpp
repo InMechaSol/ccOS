@@ -170,9 +170,13 @@ public:
         systickListHead(nullptr, nullptr),
         exceptionListHead(&ccACU_compMod, nullptr)    
     {
+        // Link UI Server and Console Menu Objects
         UIServer_data.uiPtrArray[0] = &LCDKeyPadMenuInst;
         UIServer_data.uiPtrArray[1] = &Console1MenuInst;
         UIServer_data.uiPtrArray[2] = &Console2MenuInst;
+
+        // Prevent execution of api modules at ccNOos level - UI Server will handle for the ccACU application
+        ((SatComACSStruct*)ccACU_compMod.getModuleDataPtr())->execAPIsMainLoop = ui8FALSE;
 
         // link the execution system instance
         theExecutionSystemPtr = theExecutionSystemPtrIn;

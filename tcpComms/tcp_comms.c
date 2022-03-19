@@ -70,7 +70,7 @@ void TCPRead(struct tcpStruct* tcpStructPtrIn)
 {
 #define readAttempts (2)
     tcpStructPtrIn->devdata.numbytesReadIn = 0;
-    tcpStructPtrIn->devdata.numbytes2Read = charBuffMax;
+    tcpStructPtrIn->devdata.numbytes2Read = charBuffMax-1;
     switch (tcpStructPtrIn->tcpStatus)
     {
     case tcpstat_connected:
@@ -98,6 +98,7 @@ void TCPRead(struct tcpStruct* tcpStructPtrIn)
             }
             
         }
+        tcpStructPtrIn->devdata.inbuff.charbuff[tcpStructPtrIn->devdata.numbytesReadIn] = 0x00;
         return;
     default: return;
     }

@@ -243,22 +243,29 @@ int UI_ServerClass::mod_excphandler()
 }
 
 
-
-
-void parseGroupccACU()
+menuNode* UI_ServerClass::fromMenuIndex(int menuIndexIn)
 {
-    
+    return &ccACUPtr->getUIServerPtr()->thesatcomacsNode;
+}
+
+void parseGroupccACU(ccACU_Class* ccACUPtrIn, consoleMenuClass* uiMenuPtrIn)
+{
+    struct uiStruct* uiStructPtrIn = uiMenuPtrIn->getUIdataPtr();
+    int curMenIndex = uiStructPtrIn->currentMenuIndex;
+    parseSatComACSMenuAPI(((SatComACSStruct*)ccACUPtrIn->getModuleDataPtr()), uiStructPtrIn);
+
+    // if satcomacs current menu index has changed, set active menu node ptr accordingly
+    if(curMenIndex!= uiStructPtrIn->currentMenuIndex)
+        uiMenuPtrIn->setActiveMenuPtr(ccACUPtrIn->getUIServerPtr()->fromMenuIndex(uiStructPtrIn->currentMenuIndex));
 }
 void parseccACUMenuAPI(ccACU_Class* ccACUPtrIn, consoleMenuClass* uiMenuPtrIn)
 {
     struct uiStruct* uiStructPtrIn = uiMenuPtrIn->getUIdataPtr();
     
-    //(Status) APT; to see cM_TxRx screen
     OPENIF2("ACU", ccACUPtrIn->getUIServerPtr()->theMainMenuNode)
-        //(Status) APT:; 
-        //(Command) APT::;
-        //(Command) APT:::;		
+        parseGroupccACU(ccACUPtrIn, uiMenuPtrIn);
     CLOSEIF("ACU", ccACUPtrIn->getUIServerPtr()->theMainMenuNode)
+        parseGroupccACU(ccACUPtrIn, uiMenuPtrIn);
 }
 void writeccACUMenuScreenConsole(ccACU_Class* ccACUPtrIn, consoleMenuClass* uiMenuPtrIn)
 {
@@ -302,35 +309,23 @@ void writeccACUMenuScreenLCDSmall(ccACU_Class* ccACUPtrIn, consoleMenuClass* uiM
 
 UI_ServerClass::ccacu_menuNode::ccacu_menuNode(ccACU_Class* acuptrIn):satcomacs_menuNode(acuptrIn)
 {
-
+    acuptr = acuptrIn;
 }
 void UI_ServerClass::ccacu_menuNode::parseInput(consoleMenuClass* uiMenuPtrIn)
 {
-
-}
-void UI_ServerClass::ccacu_menuNode::printMenu(consoleMenuClass* uiMenuPtrIn)
-{
-    
+    parseccACUMenuAPI( acuptr, uiMenuPtrIn );
 }
 
 UI_ServerClass::satcomacsNode::satcomacsNode(ccACU_Class* acuptrIn):UI_ServerClass::ccacu_menuNode(acuptrIn)
 {
 
 }
-void UI_ServerClass::satcomacsNode::parseInput(consoleMenuClass* uiMenuPtrIn)
-{
-
-}
 void UI_ServerClass::satcomacsNode::printMenu(consoleMenuClass* uiMenuPtrIn)
 {
-
+    printM_SatComACS(acuptr->getModuleDataPtr(), uiMenuPtrIn->getUIdataPtr());
 }
 
 UI_ServerClass::mainMenuNode::mainMenuNode(ccACU_Class* acuptrIn) :UI_ServerClass::ccacu_menuNode(acuptrIn)
-{
-
-}
-void UI_ServerClass::mainMenuNode::parseInput(consoleMenuClass* uiMenuPtrIn)
 {
 
 }
@@ -347,10 +342,6 @@ void UI_ServerClass::mainMenuNode::printMenu(consoleMenuClass* uiMenuPtrIn)
 }
 
 UI_ServerClass::rootMenuNode::rootMenuNode(ccACU_Class* acuptrIn) :UI_ServerClass::ccacu_menuNode(acuptrIn)
-{
-
-}
-void UI_ServerClass::rootMenuNode::parseInput(consoleMenuClass* uiMenuPtrIn)
 {
 
 }
