@@ -39,7 +39,27 @@ int UI_ServerClass::mod_setup()
 	return RETURN_ERROR; 
 }
 
+void writeHelpString(struct uiStruct* uiStructPtrIn)
+{
+    if (uiStructPtrIn == nullptr)
+    {
+        uiStructPtrIn->lines2print = 0;
+        return;
+    }
+    if (uiStructPtrIn->showHelp == ui8TRUE)
+    {
+        OPENSWITCH(uiStructPtrIn)
+        case 0:
+            PRINT_MENU_LN  "\n%s %s - %s Menu %s", terminalSlashes(), "ccACU", "Help", terminalSlashes()   END_MENU_LN;
+        case 1:
+            PRINT_MENU_LN  "\n%sACU; \t\tto display Main Menu", cursorString(0)   END_MENU_LN;        
+        default:        
+        CLOSESWITCH(uiStructPtrIn)
 
+    }
+    else
+        uiStructPtrIn->lines2print = 0;
+}
 
 #define MENU ccACUPtr->SatComACSData.ConsoleMenu
 #define TEMPIODEV ConsoleMenuTCPStructTemp1.devdata
@@ -190,6 +210,11 @@ int UI_ServerClass::mod_loop()
         MENU.lines2print = 1;
         MENU.linesprinted = 0;
         OPENDOWHILE(&MENU)
+            writeHelpString(&MENU);
+        CLOSEDOWHILE2((&MENU), writeTCP1)
+        MENU.lines2print = 1;
+        MENU.linesprinted = 0;
+        OPENDOWHILE(&MENU)
             writeUIHelpString(&MENU);
         CLOSEDOWHILE2((&MENU), writeTCP1)
         MENU.showPrompt = ui8TRUE;
@@ -219,6 +244,11 @@ int UI_ServerClass::mod_loop()
             data->uiPtrArray[2]->getActiveMenuPtr()->printMenu(data->uiPtrArray[2]);
         CLOSEDOWHILE2((&MENU), writeTCP2)
             MENU.lines2print = 1;
+        MENU.linesprinted = 0;
+        OPENDOWHILE(&MENU)
+            writeHelpString(&MENU);
+        CLOSEDOWHILE2((&MENU), writeTCP2)
+        MENU.lines2print = 1;
         MENU.linesprinted = 0;
         OPENDOWHILE(&MENU)
             writeUIHelpString(&MENU);
@@ -275,7 +305,13 @@ void writeccACUMenuScreenConsole(ccACU_Class* ccACUPtrIn, consoleMenuClass* uiMe
 	case 0:
         PRINT_MENU_LN  "\n%s %s - %s Menu %s", terminalSlashes(), "ccACU", "Main", terminalSlashes()	END_MENU_LN;
     case 1:
-        PRINT_MENU_LN  "\n%s", cursorString(uiStructPtrIn->cursorIndex == 0)						END_MENU_LN;
+        PRINT_MENU_LN  "\n%sModem", cursorString(uiStructPtrIn->cursorIndex == 0)						END_MENU_LN;
+    case 2:
+        PRINT_MENU_LN  "\n%sManaged Switch", cursorString(uiStructPtrIn->cursorIndex == 1)				END_MENU_LN;
+    case 3:
+        PRINT_MENU_LN  "\n%sOS Execution System", cursorString(uiStructPtrIn->cursorIndex == 2)			END_MENU_LN;
+    case 4:
+        PRINT_MENU_LN  "\n%sSatComACS", cursorString(uiStructPtrIn->cursorIndex == 3)						END_MENU_LN;
     default:
     CLOSESWITCH(uiStructPtrIn)
 }

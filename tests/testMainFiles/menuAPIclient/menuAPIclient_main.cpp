@@ -11,11 +11,18 @@ int main(int argc, char* argv[])
     {
         try
         {
-            std::cout << "Got this many Args: " << argc-1 << std::endl << std::flush;
             if (argc > 1)
-                std::cout << "Got this  Argv: " << argv[1] << std::endl << std::flush;
-            std::cout << "Press 'd' then Enter to Continue" << std::flush;
-            std::cin >> keysInput;
+            {
+                char* ulString = argv[1];
+                if (stringMatchCaseSensitive(ulString, "Operator"))
+                    Console_UI.UserLevelString = "Operator";
+                else if(stringMatchCaseSensitive(ulString, "Administrator"))
+                    Console_UI.UserLevelString = "Administrator";
+                else if(stringMatchCaseSensitive(ulString, "Developer"))
+                    Console_UI.UserLevelString = "Developer";
+                else
+                    Console_UI.UserLevelString = "Observer";
+            }
             Console_UI.ThreadExecute();
         }
         catch (std::exception& e)

@@ -79,7 +79,9 @@ int TCPmenuAPIClientclass::mod_setup()
 }
 int TCPmenuAPIClientclass::mod_loop()
 {
+	static enum tcpServerClientStatus lastStatus = tcpstat_uninitialized;
 	char lastChar = 0x00;
+	static bool need2sendUL = false;
 	theTCPClient.ShutdownRestartClientSocket();	
 	do {
 		ReadFromDevice(); lastChar = 0x00;
@@ -104,6 +106,21 @@ int TCPmenuAPIClientclass::mod_loop()
 			
 		}
 	} while (tcpData.devdata.numbytesReadIn > 0 );
+	
+	// if just connected, send userlevel command
+	if (tcpData.tcpStatus!= lastStatus)
+	{
+		lastStatus = tcpData.tcpStatus;
+		if (lastStatus == tcpstat_connected)
+		{		
+			need2sendUL = true;
+			if (need2sendUL)
+			{
+				tcpData.devdata.numbytes2Write = SN_PrintF(&tcpData.devdata.outbuff.charbuff[0], charBuffMax, "UserLevel:%s;", UserLevelString.c_str());
+				need2sendUL = false;
+			}
+		}
+	}
 	ReadfromUI(&tcpData.devdata);
 	SendToDevice();
 	return ui8FALSE; 

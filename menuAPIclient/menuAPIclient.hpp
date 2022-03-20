@@ -2,7 +2,7 @@
 #define __MENUAPICLIENT__
 
 #include "exe_thread.hpp"
-
+#include <string>
 
 class menuAPIClientclass : public exe_thread_class
 {
@@ -28,6 +28,7 @@ public:
 	int mod_setup();
 	int mod_loop();
 	char* IDString();
+	std::string UserLevelString = "Observer";
 };
 
 class UDPmenuAPIClientclass : public menuAPIClientclass
