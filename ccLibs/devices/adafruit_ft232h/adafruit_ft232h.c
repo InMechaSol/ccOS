@@ -3,6 +3,6 @@
 struct adaFruitFT232hstruct createFT232Struct()
 {
 	struct adaFruitFT232hstruct outstruct;
-	outstruct.spidev.chipSelectEnabled = false;
+	outstruct.spidev.chipSelectEnabled = ui8FALSE;
 	return outstruct;
 }
