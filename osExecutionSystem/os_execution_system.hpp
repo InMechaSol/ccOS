@@ -6,6 +6,7 @@
 //#include "console_menu.h"
 #include <vector>
 #include <thread>
+#include <climits>
 
 #define uSEC_PER_CLOCK (1000000/CLOCKS_PER_SEC)
 

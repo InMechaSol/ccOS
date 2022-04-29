@@ -1,5 +1,16 @@
 #include "tcp_comms.h"
 
+const char* getTCPStatusString(enum tcpServerClientStatus gotTCPStatus)
+{
+    switch (gotTCPStatus)
+    {
+    case tcpstat_connected: return "connected";
+    case tcpstat_connecting: return "connecting";
+    case tcpstat_created: return "created";
+    case tcpstat_error: return "error";
+    case tcpstat_uninitialized: return "uninitialized";
+    }
+}
 
 struct tcpStruct createTCPStruct()
 {
@@ -412,13 +423,35 @@ void shutdownRestartClientSocket(struct tcpStruct* tcpStructPtrIn)
     }
 
 
-#else
-void OpenTCPServer(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void CloseTCPServer(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void TCPServer_Write2Client(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void TCPServer_ReadFromClient(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void OpenTCPClient(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void CloseTCPClient(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void TCPClient_Write2Server(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
-void TCPClient_ReadFromServer(struct tcpServerStruct* tcpServerStructPtrIn) { ; }
+#endif
+#ifndef _WIN32
+void TCPWrite(struct tcpStruct* tcpStructPtrIn)
+{
+    ;
+}
+void TCPRead(struct tcpStruct* tcpStructPtrIn)
+{
+    ;
+}
+void OpenTCPServer(struct tcpServerStruct* tcpServerStructPtrIn)
+{
+    ;
+}
+void shutdownRestartServerSocket(struct tcpServerStruct* tcpServerStructPtrIn)
+{
+    ;
+}
+void serverListenAccept(struct tcpServerStruct* tcpServerStructPtrIn)
+{
+    ;
+}
+void OpenTCPClient(struct tcpStruct* tcpStructPtrIn)
+{
+    ;
+}
+// written to be called from the mainloop() function
+void shutdownRestartClientSocket(struct tcpStruct* tcpStructPtrIn)
+{
+    ;
+}
 #endif

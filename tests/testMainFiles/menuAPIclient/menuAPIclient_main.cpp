@@ -1,5 +1,5 @@
 #include "menuAPIclient.hpp"
-#include "Platform_ccOS.h"
+#include "Platform_ccOS.hpp"
 
 static bool keepGoing = true;
 static char keysInput[charBuffMax] = "";

@@ -11,16 +11,18 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-
+#include <fcntl.h> // Contains file controls like O_RDWR
+#include <errno.h> // Error integer and strerror() function
+#include <termios.h> // Contains POSIX terminal control definitions
+#include <unistd.h> // write(), read(), close()
 #endif
 
 struct portParametersStruct
 {
-#ifdef _WIN32
     const char* portName;
+#ifdef _WIN32
     HANDLE hComm;
 #else
-    std::string portName;
     int hComm;
 #endif
     struct SerialDeviceStruct serialdev;

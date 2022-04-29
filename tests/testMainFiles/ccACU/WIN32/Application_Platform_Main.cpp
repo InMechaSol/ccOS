@@ -1,5 +1,5 @@
 #include "Application_Platform_Main.hpp"
-#include "Platform_ccOS.h"
+#include "Platform_ccOS.hpp"
 
 ccACU_ApplicationClass theApplicationExample(&theExecutionSystem);
 
