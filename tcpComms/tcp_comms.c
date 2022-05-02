@@ -435,7 +435,40 @@ void TCPRead(struct tcpStruct* tcpStructPtrIn)
 }
 void OpenTCPServer(struct tcpServerStruct* tcpServerStructPtrIn)
 {
-    ;
+    // Initialize Lib?
+
+
+    // Create a SOCKET for connecting to server
+    tcpServerStructPtrIn->ListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (tcpServerStructPtrIn->ListenSocket == INVALID_SOCKET) {
+        tcpServerStructPtrIn->tcpData.tcpStatus = tcpstat_error;
+        return;
+    }
+
+    ZeroMemory(&tcpServerStructPtrIn->tcpData.serverAddr, sizeof(tcpServerStructPtrIn->tcpData.serverAddr));
+    tcpServerStructPtrIn->tcpData.serverAddr.sin_family = AF_INET;
+    tcpServerStructPtrIn->tcpData.serverAddr.sin_addr.s_addr = INADDR_ANY;
+    tcpServerStructPtrIn->tcpData.serverAddr.sin_port = htons(tcpServerStructPtrIn->listenPort);
+
+    // Setup the TCP listening socket
+    tcpServerStructPtrIn->tcpData.iResult = bind(tcpServerStructPtrIn->ListenSocket,
+        (struct sockaddr*)&tcpServerStructPtrIn->tcpData.serverAddr,
+        sizeof(tcpServerStructPtrIn->tcpData.serverAddr));
+    tcpServerStructPtrIn->tcpData.lastErr = WSAGetLastError();
+    if (tcpServerStructPtrIn->tcpData.iResult == SOCKET_ERROR) {
+        tcpServerStructPtrIn->tcpData.tcpStatus = tcpstat_error;
+        return;
+    }
+
+    // set listen socket non-blocking
+    unsigned long ul = 1;
+    if (ioctlsocket(tcpServerStructPtrIn->ListenSocket, FIONBIO, (unsigned long*)&ul) != NO_ERROR)
+    {
+        tcpServerStructPtrIn->tcpData.tcpStatus = tcpstat_error;
+        return;
+    }
+
+    tcpServerStructPtrIn->tcpData.tcpStatus = tcpstat_created;
 }
 void shutdownRestartServerSocket(struct tcpServerStruct* tcpServerStructPtrIn)
 {
