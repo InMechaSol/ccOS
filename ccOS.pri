@@ -32,7 +32,11 @@ SOURCES += $$ccOSDIR/serialComms/serial_comms_class.cpp
 SOURCES += $$ccOSDIR/tcpComms/tcp_comms_class.cpp
 SOURCES += $$ccOSDIR/stdIOExtProc/stdio_extproc.cpp
 
-
+if(ccOS_menuClient) {
+	INCLUDEPATH += $$ccOSDIR/menuAPIclient
+	HEADERS += $$ccOSDIR/menuAPIclient/menuAPIclient.hpp
+	SOURCES += $$ccOSDIR/menuAPIclient/menuAPIclient.cpp
+}
 
 
 if(ccOSAllLibs|ccOSLibs_WMM) {
