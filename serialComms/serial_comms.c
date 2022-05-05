@@ -173,57 +173,70 @@ UI_8 isComPortOpen(struct portParametersStruct* paramsPtr)
 }
 void openComPort(struct portParametersStruct* paramsPtr)
 {
+    int errCapture = 0;
     paramsPtr->hComm = open(paramsPtr->portName, O_RDWR | O_NDELAY);
 
-    // Set parameters
-    struct termios tty;
+    if(ui8TRUE==isComPortOpen(paramsPtr))
+    {
+        // Set parameters
+        struct termios tty;
 
-    // Get current settings
-    if(tcgetattr(paramsPtr->hComm, &tty) != 0) {
-        return;
+        // Get current settings
+        if(tcgetattr(paramsPtr->hComm, &tty) != 0) {
+            closeComPort(paramsPtr);
+        }
+        else
+        {
+            tty.c_cflag &= ~PARENB; //disable parity
+            tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used
+            tty.c_cflag &= ~CSIZE;
+            tty.c_cflag |= CS8; //8 bits
+            tty.c_cflag &= ~CRTSCTS; //no hardware flow control
+            tty.c_cflag |= CREAD | CLOCAL;
+
+            tty.c_lflag &= ~ICANON; // disable canonical mode (newline terminated input)
+            tty.c_lflag &= ~ECHO; // Disable echo
+            tty.c_lflag &= ~ISIG; // Disable signal chars
+
+            tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
+            tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
+
+            tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+            tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+
+            tty.c_cc[VTIME] = 0;    // Do not wait for any characters
+            tty.c_cc[VMIN] = 0;
+
+            // Update rate.
+            if (paramsPtr->serialdev.baudRate <= 1200)
+                cfsetspeed(&tty, B1200);
+            else if(paramsPtr->serialdev.baudRate  <= 2400)
+                cfsetspeed(&tty, B2400);
+            else if (paramsPtr->serialdev.baudRate  <= 4800)
+                cfsetspeed(&tty, B4800);
+            else if (paramsPtr->serialdev.baudRate  <= 9600)
+                cfsetspeed(&tty, B9600);
+            else if (paramsPtr->serialdev.baudRate  <= 19200)
+                cfsetspeed(&tty, B19200);
+            else if (paramsPtr->serialdev.baudRate  <= 38400)
+                cfsetspeed(&tty, B38400);
+            else if (paramsPtr->serialdev.baudRate  <= 57600)
+                cfsetspeed(&tty, B57600);
+            else if (paramsPtr->serialdev.baudRate  <= 115200)
+                cfsetspeed(&tty, B115200);
+
+            // Save tty settings
+            if (tcsetattr(paramsPtr->hComm, TCSANOW, &tty) != 0)
+                closeComPort(paramsPtr);
+        }
+    }
+    else
+    {
+        errCapture = errno;
     }
 
-    tty.c_cflag &= ~PARENB; //disable parity
-    tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used
-    tty.c_cflag &= ~CSIZE;
-    tty.c_cflag |= CS8; //8 bits
-    tty.c_cflag &= ~CRTSCTS; //no hardware flow control
-    tty.c_cflag |= CREAD | CLOCAL;
 
-    tty.c_lflag &= ~ICANON; // disable canonical mode (newline terminated input)
-    tty.c_lflag &= ~ECHO; // Disable echo
-    tty.c_lflag &= ~ISIG; // Disable signal chars
 
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
-
-    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-
-    tty.c_cc[VTIME] = 0;    // Do not wait for any characters
-    tty.c_cc[VMIN] = 0;
-
-    // Update rate.
-    if (paramsPtr->serialdev.baudRate <= 1200)
-        cfsetspeed(&tty, B1200);
-    else if(paramsPtr->serialdev.baudRate  <= 2400)
-        cfsetspeed(&tty, B2400);
-    else if (paramsPtr->serialdev.baudRate  <= 4800)
-        cfsetspeed(&tty, B4800);
-    else if (paramsPtr->serialdev.baudRate  <= 9600)
-        cfsetspeed(&tty, B9600);
-    else if (paramsPtr->serialdev.baudRate  <= 19200)
-        cfsetspeed(&tty, B19200);
-    else if (paramsPtr->serialdev.baudRate  <= 38400)
-        cfsetspeed(&tty, B38400);
-    else if (paramsPtr->serialdev.baudRate  <= 57600)
-        cfsetspeed(&tty, B57600);
-    else if (paramsPtr->serialdev.baudRate  <= 115200)
-        cfsetspeed(&tty, B115200);
-
-    // Save tty settings
-    if (tcsetattr(paramsPtr->hComm, TCSANOW, &tty) != 0)
-        return;
 }
 void closeComPort(struct portParametersStruct* paramsPtr)
 {
@@ -232,10 +245,28 @@ void closeComPort(struct portParametersStruct* paramsPtr)
 }
 int readComPort(struct portParametersStruct* paramsPtr)
 {
-    return 0;
+    int bytesRead = 0;
+    if(paramsPtr->serialdev.readIndex > -1 && paramsPtr->serialdev.readIndex < charBuffMax && paramsPtr->serialdev.devdata.numbytes2Read < charBuffMax)
+    {
+        bytesRead = read(   paramsPtr->hComm,
+                            &(paramsPtr->serialdev.devdata.inbuff.charbuff[paramsPtr->serialdev.readIndex]),
+                            paramsPtr->serialdev.devdata.numbytes2Read);
+        if (bytesRead>0)
+        {
+            return (int)bytesRead;
+        }
+        else
+            return 0;
+    }
+    else
+        return 0;
 }
 int writeComPort(struct portParametersStruct* paramsPtr)
 {
+    if (isComPortOpen(paramsPtr))
+        {
+            ;
+        }
     return 0;
 }
 #endif
