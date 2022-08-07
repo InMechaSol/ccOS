@@ -1,0 +1,4 @@
+[submodule "ccLibs/websocketpp"]
+	path = ccLibs/websocketpp
+	url = https://github.com/zaphoyd/websocketpp.git
+	branch = master
