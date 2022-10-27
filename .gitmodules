@@ -2,7 +2,3 @@
 	path = ccLibs/websocketpp
 	url = https://github.com/zaphoyd/websocketpp.git
 	branch = master
-[submodule "ccLibs/iq-module-communication-cpp"]
-	path = ccLibs/iq-module-communication-cpp
-	url = https://github.com/iq-motion-control/iq-module-communication-cpp.git
-	branch = master
