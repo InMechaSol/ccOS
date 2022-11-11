@@ -50,6 +50,7 @@ void menuAPIClientclass::ReadfromUI(struct devicedatastruct* devptr)
 menuAPIClientclass::menuAPIClientclass(char* keysinbufferin):exe_thread_class(&compModData)
 {
 	keysinbuffer = keysinbufferin;
+    mainLoopMS = 100;
 	
 }
 void menuAPIClientclass::mod_systick() { ; }
