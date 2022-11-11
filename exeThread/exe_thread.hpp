@@ -1,10 +1,12 @@
 #ifndef __EXETHREAD__
 #define __EXETHREAD__
 
-#include "compute_module.h"
-#include "version_config.hpp"
 #include <cstring>
 #include <thread>
+
+#include "compute_module.h"
+#include "version_config.hpp"
+
 
 class exe_thread_class : public computeModuleClass
 {
